@@ -1,20 +1,58 @@
 plugins {
     id 'java'
+    id 'net.serenity-bdd.serenity-gradle-plugin' version '4.2.1'
+}
+description = "Saucedemo - Automatización"
+group = 'saucedemo'
+version = '1.0.0'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
-group = 'org.example'
-version = '1.0-SNAPSHOT'
+
+ext {
+    junitVersion = '4.13.2'
+    cucumberVersion = '7.18.1'
+    serenityVersion = '4.2.1'
+    lombokVersion = '1.18.32'
+    datafakerVersion = '2.3.1'
+}
+
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testImplementation platform('org.junit:junit-bom:6.0.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation "junit:junit:${junitVersion}"
+
+    implementation "net.serenity-bdd:serenity-core:${serenityVersion}"
+    implementation "net.serenity-bdd:serenity-screenplay:${serenityVersion}"
+    implementation "net.serenity-bdd:serenity-screenplay-webdriver:${serenityVersion}"
+
+    testImplementation "net.serenity-bdd:serenity-cucumber:${serenityVersion}"
+    testImplementation "net.serenity-bdd:serenity-junit:${serenityVersion}"
+
+    testImplementation "io.cucumber:cucumber-java:${cucumberVersion}"
+    testImplementation "io.cucumber:cucumber-junit:${cucumberVersion}"
+
+    implementation "net.datafaker:datafaker:${datafakerVersion}"
+
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+    testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 }
 
 test {
-    useJUnitPlatform()
+    systemProperties(System.properties)
+    testLogging {
+        showStandardStreams = true
+        exceptionFormat = 'full'
+    }
 }
+
+check.dependsOn aggregate
+test.finalizedBy(aggregate)
